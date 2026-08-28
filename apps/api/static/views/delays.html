@@ -1,0 +1,164 @@
+<div class="delays-container">
+    
+    <div class="grid-2">
+        <!-- Chat Interface -->
+        <div class="card glass-panel flex-col" style="height: 600px;">
+            <div class="mb-16">
+                <h3 style="display:flex; align-items:center; gap:8px;">
+                    <i class="ph-fill ph-brain" style="color: var(--secondary)"></i> Delay Intelligence Agent
+                </h3>
+                <p class="text-muted" style="font-size:0.85rem;">Ask natural language questions about schedule delays, root causes, and bottlenecks.</p>
+            </div>
+            
+            <div class="chat-history" id="delay-chat-history">
+                <div class="chat-msg ai-msg">
+                    Hello! I am the Delay Intelligence Agent. You can ask me things like:<br><br>
+                    • "Why is P-204 delayed?"<br>
+                    • "Show me all material delivery issues in CDU-01"<br>
+                    • "Which contractor is causing the most delays?"
+                </div>
+            </div>
+
+            <div class="chat-input-area mt-16">
+                <input type="text" id="delay-query-input" placeholder="Type your query...">
+                <button class="btn btn-primary" id="delay-query-btn"><i class="ph-fill ph-paper-plane-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Delay Analytics Sidebar -->
+        <div class="flex-col" style="gap: 24px;">
+            <div class="card glass-panel">
+                <h3 class="mb-16">Top Delay Root Causes</h3>
+                <div id="root-cause-chart" class="chart-mockup">
+                    <div class="bar-row">
+                        <span>MATERIAL_DELIVERY</span>
+                        <div class="bar-track"><div class="bar-fill" style="width: 80%; background: var(--danger);"></div></div>
+                        <span>12 days</span>
+                    </div>
+                    <div class="bar-row">
+                        <span>WEATHER</span>
+                        <div class="bar-track"><div class="bar-fill" style="width: 45%; background: var(--warning);"></div></div>
+                        <span>5 days</span>
+                    </div>
+                    <div class="bar-row">
+                        <span>LABOUR_SHORTAGE</span>
+                        <div class="bar-track"><div class="bar-fill" style="width: 30%; background: var(--primary);"></div></div>
+                        <span>3 days</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card glass-panel" style="flex:1;">
+                <h3 class="mb-16">Recent Delay Logs</h3>
+                <div class="delay-log-list" id="delay-log-list">
+                    <div class="loading-state-small">
+                        <div class="spinner" style="width: 20px;height:20px;border-width:2px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.flex-col { display: flex; flex-direction: column; }
+
+.chat-history {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chat-msg {
+    padding: 12px 16px;
+    border-radius: 8px;
+    max-width: 90%;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: fadeIn 0.2s ease;
+}
+
+.ai-msg {
+    background: rgba(139, 92, 246, 0.15); /* secondary-dim */
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #e2e8f0;
+    align-self: flex-start;
+}
+
+.user-msg {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    align-self: flex-end;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 12px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+}
+.chat-input-area input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+/* Charts */
+.chart-mockup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+}
+
+.bar-row span:first-child { width: 140px; color: var(--text-muted); }
+.bar-row span:last-child { width: 50px; text-align: right; font-weight: 600; }
+
+.bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 4px; }
+
+/* Delay Logs */
+.delay-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    max-height: 250px;
+}
+
+.delay-list-item {
+    padding: 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border-left: 3px solid var(--danger);
+}
+.delay-list-item strong { color: var(--primary); font-family: monospace; }
+</style>

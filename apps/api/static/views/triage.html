@@ -1,0 +1,125 @@
+<div class="triage-container">
+    
+    <div class="card glass-panel mb-24">
+        <div class="flex-between">
+            <div>
+                <h2 style="margin-bottom: 4px;">Human-in-the-Loop Triage</h2>
+                <p class="text-muted">Review incoming field reports that the AI could not confidently map to the schedule.</p>
+            </div>
+            <div class="triage-stat">
+                <div class="triage-count" id="triage-total-count">0</div>
+                <div class="text-muted" style="font-size:0.8rem;">Pending Items</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Triage List -->
+    <div class="triage-list" id="triage-list-container">
+        <div class="loading-state-small">
+            <div class="spinner"></div>
+            <p>Loading queue...</p>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.triage-stat {
+    text-align: right;
+}
+.triage-count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--warning);
+    line-height: 1;
+}
+
+.triage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.triage-card {
+    background: var(--bg-card);
+    border: 1px solid var(--warning);
+    border-left: 4px solid var(--warning);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.triage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 12px;
+}
+
+.raw-input {
+    background: rgba(0,0,0,0.3);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+}
+
+.confidence-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.triage-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.suggestion-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.suggestion-id { color: var(--primary); font-family: monospace; font-size: 0.9rem; }
+.suggestion-name { font-weight: 500; font-size: 0.95rem; }
+
+.triage-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-resolve {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+.btn-resolve:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.empty-triage {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px dashed var(--border-light);
+}
+</style>
