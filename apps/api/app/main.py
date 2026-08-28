@@ -1,5 +1,8 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.api import reports, projects, triage, audit, activities, delays, matches
 
 app = FastAPI(
@@ -28,3 +31,13 @@ app.include_router(matches.router, prefix="/api/matches", tags=["matches"])
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+# Mount Static Files & Frontend SPA
+static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+    @app.get("/")
+    def serve_frontend():
+        return FileResponse(os.path.join(static_dir, "index.html"))
+

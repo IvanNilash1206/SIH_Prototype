@@ -1,34 +1,45 @@
-# SynchroLink Prototype: Phases Completed
+# SynchroLink Prototype: Running & Operational
 
-We've successfully built out the remaining interfaces and connected them to the AI-powered backend endpoints. The prototype is now a fully functional, end-to-end demonstration of the Schedule Intelligence engine.
+The SynchroLink EPC Progress Intelligence system is live and running.
 
-## What Was Built
+## Active Endpoints & Access
+- **Web Application & UI Dashboard**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **Interactive API Docs (Swagger)**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
-### 1. Backend APIs
-- **`/api/triage`**: Handles listing ambiguous/low-confidence AI matches that require a human planner's review. Includes endpoints to `approve` or `reject` the matches.
-- **`/api/audit`**: Provides an immutable log of all schedule mutations, displaying who made the change (AI vs Planner) and the exact progress updates.
-- **`/api/activities`**: Fetches the live Gantt/Progress status for all schedule activities.
-- **`/api/delays`**: Surfaces extracted delay events and their root causes.
-- **`/api/matches`**: Exposes the granular AI scoring matrix (Asset, Location, Discipline, Action scores) for explainability.
+---
 
-### 2. Frontend Interfaces
-- **Planner Triage**: A dedicated UI to review field reports that the AI was unsure about. Planners can see the extracted entities, the suggested match candidates, and the explanation reasons, before approving the match.
-- **Schedule Matching Intelligence**: An explainability dashboard showing *how* the AI scored and ranked each field report against the schedule activities.
-- **Gantt & Progress**: Visualizes the `Baseline` vs `Actual` progress for activities, dynamically updating based on the AI auto-sync or human approvals.
-- **Delay Analysis**: An analytical view summarizing the detected schedule slips, total days lost, and common root causes extracted from the reports.
-- **Audit Trail**: A SOC2 compliant-style table listing all mutations to the schedule state.
+## What Is Running
 
-## Verification
+### 1. Backend REST Engine (FastAPI + SQLite)
+- **`/api/reports`**: Multi-modal field ingestion (Voice/Text/DPR) triggering the 6-stage async pipeline.
+- **`/api/activities`**: Live EPC schedule repository tracking 205 activities with baseline vs actual progress.
+- **`/api/matches`**: 5-factor scoring matrix breakdown (Asset 40%, Location 25%, Discipline 15%, Action 10%, Semantic 10%).
+- **`/api/triage`**: Human-in-the-loop review queue for ambiguous/sub-threshold field reports.
+- **`/api/delays`**: Delay impact register and root cause distribution aggregator.
+- **`/api/audit`**: SOC2-compliant immutable audit trail of all AI and human schedule mutations.
+- **`/api/projects/reset`**: Single-click demo state reset and re-seed capability.
 
-An automated browser agent ran an end-to-end test of the entire workflow:
+### 2. Frontend Control Room UI (Industrial Design System)
+- **Command Center**: Real-time KPI telemetry, discipline progress overview, live activity stream, and recent incidents.
+- **Field Ingestion**: Voice recorder simulator with waveform pulse, multi-language Hinglish/Hindi text presets, and real-time pipeline status stepper.
+- **Extraction AI**: Dual-column entity inspector displaying structured tags (Discipline, Plant Unit, Asset ID, Scope Action, Progress %, Delay Days, Root Cause).
+- **Schedule Matching**: Granular explainability matrix showing candidate activity rankings and component scores.
+- **Planner Triage**: Ambiguity review queue with candidate selection and one-click approve/reject actions.
+- **Gantt & Progress**: 205-activity searchable schedule table with dual baseline vs actual progress bars.
+- **Delay Intelligence**: Schedule slip analytics, root cause charts, and delay event logs.
+- **Audit Trail**: Tamper-evident mutation log table with old/new value diffs.
 
-1. **Submission**: Submitted a field report indicating P-204 was delayed and at 20% progress.
-2. **Review**: Navigated to Planner Triage, saw the report pending review, and approved the match.
-3. **Verification**: Checked Gantt & Progress to see `MECH-CDU2-P204-001` update to 20%, and checked Audit Trail to see the manual override logged.
+---
 
-Here is a recording of the agent navigating the completed prototype:
+## Verification & Browser Walkthrough
 
-![Prototype End-to-End Walkthrough](file:///C:/Users/ADMIN/.gemini/antigravity-ide/brain/a983ec96-6627-461e-a1d9-6cf08dbcf172/test_prototype_phases_1787849828792.webp)
+An automated browser test validated all 8 application views and the end-to-end ingestion pipeline:
 
-> [!TIP]
-> The backend and frontend servers are currently running in the background. You can open `http://localhost:3000` in your own browser to explore the prototype yourself!
+1. **Ingestion**: Ingested the Golden Field Report (*"CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai. Material delivery ki wajah se 2 din delay hua."*).
+2. **AI Matching**: Matched to activity `MECH-CDU2-P204-002` with **85.5% confidence** (&ge; 85% Auto-Sync threshold).
+3. **Auto-Sync**: Automatically updated actual progress to **80%**, flagged delay of **2 days**, and recorded an immutable audit log.
+4. **Gantt & Delay Verification**: Verified updated progress bars in the Gantt screen and root cause breakdown in Delay Intelligence.
+
+![SynchroLink Live Demo Walkthrough](file:///C:/Users/SURIYA/.gemini/antigravity-ide/brain/50220fa5-0bf0-49f3-8d38-f3d1598bc802/synchrolink_live_demo_1787902578449.webp)
+

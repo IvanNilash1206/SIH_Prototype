@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynchroLink — EPC Progress Intelligence</title>
+    <!-- Modern Typography & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="theme-industrial">
+    <!-- App Wrapper -->
+    <div id="app" class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <div class="logo-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
+                    <div class="logo-text">
+                        <span class="logo-title">SYNCHROLINK</span>
+                        <span class="logo-tag">EPC INTELLIGENCE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card -->
+            <div class="sidebar-project">
+                <div class="project-indicator"></div>
+                <div class="project-info">
+                    <div class="project-name" id="sidebar-project-name">CDU Expansion Unit 2</div>
+                    <div class="project-code" id="sidebar-project-code">CDU-EXP-02</div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="nav-menu">
+                <div class="nav-section-title">CONTROL ROOM</div>
+                <button class="nav-item active" data-screen="command-center">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Command Center</span>
+                    <span class="nav-pill" id="nav-live-pill">LIVE</span>
+                </button>
+                <button class="nav-item" data-screen="field-reports">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Field Ingestion</span>
+                    <span class="badge-dot" id="nav-reports-badge"></span>
+                </button>
+                <button class="nav-item" data-screen="extraction-view">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Extraction AI</span>
+                </button>
+                <button class="nav-item" data-screen="matching-intelligence">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>Schedule Matching</span>
+                </button>
+
+                <div class="nav-section-title">ENGINEERING & OPS</div>
+                <button class="nav-item" data-screen="planner-triage">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Planner Triage</span>
+                    <span class="nav-counter danger hidden" id="nav-triage-count">0</span>
+                </button>
+                <button class="nav-item" data-screen="gantt-progress">
+                    <i class="fa-solid fa-chart-gantt"></i>
+                    <span>Gantt & Progress</span>
+                </button>
+                <button class="nav-item" data-screen="delay-intelligence">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Delay Intelligence</span>
+                    <span class="nav-counter warn hidden" id="nav-delay-count">0</span>
+                </button>
+                <button class="nav-item" data-screen="audit-trail">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Audit Trail</span>
+                </button>
+            </nav>
+
+            <!-- Bottom Sidebar Actions -->
+            <div class="sidebar-footer">
+                <button class="btn btn-outline-danger btn-sm w-full" id="btn-reset-demo">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Reset Demo State
+                </button>
+                <div class="system-status">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">Engine Online (Port 8000)</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-viewport">
+            
+            <!-- Global Top Bar -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title" id="page-title">Command Center</h1>
+                    <div class="header-breadcrumb" id="header-breadcrumb">CDU-EXP-02 &rsaquo; Real-time Operations</div>
+                </div>
+                <div class="header-right">
+                    <div class="quick-stat">
+                        <span class="stat-label">AI Confidence Threshold:</span>
+                        <span class="stat-value">85.0%</span>
+                    </div>
+                    <div class="header-pill live-pill">
+                        <span class="pulse-dot"></span>
+                        <span>TELEMETRY ACTIVE</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="btn-header-new-report">
+                        <i class="fa-solid fa-plus"></i> Submit Report
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notification Toast Container -->
+            <div id="toast-container" class="toast-container"></div>
+
+            <!-- SCREEN 1: COMMAND CENTER -->
+            <section id="screen-command-center" class="screen-view active">
+                <!-- KPI Banner -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-blue"><i class="fa-solid fa-list-check"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-total-activities">205</div>
+                            <div class="kpi-title">Total Activities</div>
+                        </div>
+                        <div class="kpi-meta positive"><i class="fa-solid fa-arrow-up"></i> 100% Tracked</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-bolt-auto"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-auto-synced">0</div>
+                            <div class="kpi-title">Auto-Synced by AI</div>
+                        </div>
+                        <div class="kpi-meta positive"><i class="fa-solid fa-check"></i> >85% Match Conf</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-amber"><i class="fa-solid fa-user-clock"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-awaiting-review">0</div>
+                            <div class="kpi-title">Awaiting Triage</div>
+                        </div>
+                        <div class="kpi-meta warn"><i class="fa-solid fa-triangle-exclamation"></i> Human in loop</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-rose"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-delayed-activities">0</div>
+                            <div class="kpi-title">Delayed Activities</div>
+                        </div>
+                        <div class="kpi-meta negative"><i class="fa-solid fa-circle-exclamation"></i> Critical Path</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-purple"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-schedule-health">94.8%</div>
+                            <div class="kpi-title">Schedule Health</div>
+                        </div>
+                        <div class="kpi-meta positive"><i class="fa-solid fa-shield"></i> On Target</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-indigo"><i class="fa-solid fa-file-invoice"></i></div>
+                        <div class="kpi-data">
+                            <div class="kpi-value" id="kpi-total-reports">0</div>
+                            <div class="kpi-title">Field Reports Ingested</div>
+                        </div>
+                        <div class="kpi-meta neutral"><i class="fa-solid fa-satellite-dish"></i> Multi-channel</div>
+                    </div>
+                </div>
+
+                <!-- Triage Alert Banner -->
+                <div class="alert-banner hidden" id="command-triage-alert">
+                    <div class="alert-content">
+                        <i class="fa-solid fa-bell"></i>
+                        <span><strong id="alert-triage-count">0</strong> Field Reports require Planner Triage approval due to ambiguous entity matching.</span>
+                    </div>
+                    <button class="btn btn-warning btn-sm" id="btn-goto-triage">Open Triage Queue &rarr;</button>
+                </div>
+
+                <!-- Command Center Grid -->
+                <div class="dashboard-grid">
+                    <!-- Left: Discipline Progress & Timeline Health -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-chart-simple"></i> Discipline Progress Overview</div>
+                            <span class="badge badge-subtle">Baseline vs Actual</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="discipline-list" id="discipline-progress-list">
+                                <!-- Generated Dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Activity Stream -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-rss"></i> Live Schedule Activity Feed</div>
+                            <button class="btn btn-icon btn-sm" id="btn-refresh-feed" title="Refresh Feed"><i class="fa-solid fa-arrows-rotate"></i></button>
+                        </div>
+                        <div class="panel-body p-0">
+                            <div class="activity-feed-list" id="dashboard-activity-feed">
+                                <!-- Feed rows -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Recent Delay Events & Recent Reports -->
+                <div class="dashboard-grid-2 mt-4">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-triangle-exclamation text-rose"></i> Detected Schedule Delays</div>
+                            <button class="btn btn-ghost btn-sm" id="btn-view-all-delays">View Analysis &rarr;</button>
+                        </div>
+                        <div class="panel-body p-0">
+                            <div class="table-responsive">
+                                <table class="table" id="table-dashboard-delays">
+                                    <thead>
+                                        <tr>
+                                            <th>Activity</th>
+                                            <th>Delay Days</th>
+                                            <th>Root Cause</th>
+                                            <th>Detected</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td colspan="4" class="text-center text-muted py-3">No active delays detected.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-clock-rotate-left text-blue"></i> Recent Audit Mutations</div>
+                            <button class="btn btn-ghost btn-sm" id="btn-view-all-audit">View Full Audit Log &rarr;</button>
+                        </div>
+                        <div class="panel-body p-0">
+                            <div class="table-responsive">
+                                <table class="table" id="table-dashboard-audit">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Actor</th>
+                                            <th>Activity</th>
+                                            <th>Progress Change</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td colspan="4" class="text-center text-muted py-3">No schedule mutations recorded yet.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 2: FIELD REPORTS (MULTI-MODAL INGESTION) -->
+            <section id="screen-field-reports" class="screen-view">
+                <div class="field-ingestion-grid">
+                    <!-- Left: Ingestion Input Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-tower-broadcast"></i> Field Progress Ingestion</div>
+                            <div class="ingestion-tabs">
+                                <button class="tab-btn active" data-tab="voice"><i class="fa-solid fa-microphone"></i> Voice / Hindi</button>
+                                <button class="tab-btn" data-tab="text"><i class="fa-solid fa-pen-to-square"></i> Text / Log</button>
+                                <button class="tab-btn" data-tab="dpr"><i class="fa-solid fa-file-excel"></i> DPR File</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            
+                            <!-- Preset Bar -->
+                            <div class="preset-section">
+                                <div class="preset-label">Quick Scenario Presets:</div>
+                                <div class="preset-chips">
+                                    <button class="chip golden" id="preset-golden" title="P-204 Installation with 2 days material delay (Auto-Sync)">
+                                        <i class="fa-solid fa-star"></i> Golden Report (Auto-Sync)
+                                    </button>
+                                    <button class="chip warn" id="preset-ambiguous" title="Pump area installation without specific asset ID (Planner Triage)">
+                                        <i class="fa-solid fa-shuffle"></i> Ambiguous Report (Triage)
+                                    </button>
+                                    <button class="chip" id="preset-civil" title="Civil foundation pour in CDU-02">
+                                        <i class="fa-solid fa-trowel"></i> Civil Concrete
+                                    </button>
+                                    <button class="chip" id="preset-electrical" title="Control room cable termination">
+                                        <i class="fa-solid fa-bolt"></i> Electrical Cable
+                                    </button>
+                                    <button class="chip" id="preset-completion" title="P-203 complete 100%">
+                                        <i class="fa-solid fa-circle-check"></i> 100% Completion
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Form Ingestion Inputs -->
+                            <form id="form-field-report" class="mt-3">
+                                
+                                <!-- Tab 1: Voice Mode -->
+                                <div class="tab-content active" id="tab-voice">
+                                    <div class="voice-recorder-card">
+                                        <div class="voice-visualizer">
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                            <div class="waveform-bar"></div>
+                                        </div>
+                                        <div class="voice-controls">
+                                            <button type="button" class="btn-record" id="btn-record-voice">
+                                                <i class="fa-solid fa-microphone"></i>
+                                            </button>
+                                            <div class="voice-meta">
+                                                <span class="record-status" id="record-status">Click mic to record or load voice simulation</span>
+                                                <span class="record-lang">Supported: Hindi, Hinglish, English, Technical Slang</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tab 2: Text Mode -->
+                                <div class="tab-content" id="tab-text">
+                                    <!-- Text mode uses common textarea below -->
+                                </div>
+
+                                <!-- Tab 3: DPR File Mode -->
+                                <div class="tab-content" id="tab-dpr">
+                                    <div class="dpr-upload-box" id="dpr-upload-box">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <div class="upload-title">Drag & drop Daily Progress Report (.pdf / .xlsx / .txt)</div>
+                                        <div class="upload-sub">Auto-extracts progress entries, delays, and supervisor sign-offs</div>
+                                    </div>
+                                </div>
+
+                                <!-- Common Report Inputs -->
+                                <div class="form-group mt-3">
+                                    <label for="report-raw-text">Field Report Transcript / Text Entry <span class="text-danger">*</span></label>
+                                    <textarea id="report-raw-text" class="form-control" rows="4" placeholder="e.g. CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai. Material delivery ki wajah se 2 din delay hua." required></textarea>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-6">
+                                        <label for="report-supervisor">Site Supervisor</label>
+                                        <input type="text" id="report-supervisor" class="form-control" value="Rajesh Kumar (Lead Site Engr)">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="report-plant-unit">Plant Unit Filter (Optional)</label>
+                                        <select id="report-plant-unit" class="form-control">
+                                            <option value="">Auto-Detect from Text</option>
+                                            <option value="CDU-01">CDU-01 (Unit 1 Area)</option>
+                                            <option value="CDU-02" selected>CDU-02 (Unit 2 Area)</option>
+                                            <option value="CDU-03">CDU-03 (Unit 3 Area)</option>
+                                            <option value="TANK-FARM">TANK-FARM (Storage)</option>
+                                            <option value="UTILITIES">UTILITIES (Power & Steam)</option>
+                                            <option value="CONTROL-ROOM">CONTROL-ROOM</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions mt-3">
+                                    <button type="submit" class="btn btn-primary btn-lg w-full" id="btn-submit-report">
+                                        <i class="fa-solid fa-microchip"></i> Ingest & Process AI Intelligence Pipeline
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Pipeline Visualizer & History -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-gears"></i> Real-time AI Pipeline State</div>
+                            <span class="badge badge-info" id="pipeline-status-badge">STANDBY</span>
+                        </div>
+                        <div class="panel-body">
+                            <!-- Pipeline Stepper -->
+                            <div class="pipeline-stepper">
+                                <div class="step-item" id="step-received">
+                                    <div class="step-circle"><i class="fa-solid fa-inbox"></i></div>
+                                    <div class="step-details">
+                                        <div class="step-name">1. Ingestion</div>
+                                        <div class="step-sub">Raw capture</div>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step-item" id="step-extracting">
+                                    <div class="step-circle"><i class="fa-solid fa-brain"></i></div>
+                                    <div class="step-details">
+                                        <div class="step-name">2. Extraction</div>
+                                        <div class="step-sub">Entity parser</div>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step-item" id="step-filtering">
+                                    <div class="step-circle"><i class="fa-solid fa-filter"></i></div>
+                                    <div class="step-details">
+                                        <div class="step-name">3. Filter</div>
+                                        <div class="step-sub">Context prune</div>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step-item" id="step-matching">
+                                    <div class="step-circle"><i class="fa-solid fa-network-wired"></i></div>
+                                    <div class="step-details">
+                                        <div class="step-name">4. Matrix Match</div>
+                                        <div class="step-sub">5-factor scoring</div>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step-item" id="step-decision">
+                                    <div class="step-circle"><i class="fa-solid fa-scale-balanced"></i></div>
+                                    <div class="step-details">
+                                        <div class="step-name">5. Decision</div>
+                                        <div class="step-sub">Sync / Triage</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Ingestion Reports Table -->
+                            <div class="mt-4">
+                                <div class="section-sub-title">Recent Ingestion Queue</div>
+                                <div class="table-responsive mt-2">
+                                    <table class="table" id="table-recent-reports">
+                                        <thead>
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>Transcript Snippet</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td colspan="4" class="text-center text-muted py-3">No reports ingested yet. Submit above.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 3: EXTRACTION INTELLIGENCE -->
+            <section id="screen-extraction-view" class="screen-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title"><i class="fa-solid fa-dna"></i> Multi-modal Extraction Breakdown</div>
+                        <div class="panel-controls">
+                            <span class="text-muted text-sm">Select Ingested Report:</span>
+                            <select id="select-extraction-report" class="form-control form-control-sm">
+                                <option value="">Loading reports...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="extraction-dual-grid">
+                            <!-- Left: Original Source Report -->
+                            <div class="extraction-card">
+                                <div class="extraction-card-title"><i class="fa-solid fa-file-lines"></i> Original Field Report</div>
+                                <div class="source-report-box" id="source-report-text">
+                                    Select a report or submit a new one to inspect entity tokenization.
+                                </div>
+                                <div class="meta-row mt-3">
+                                    <span class="meta-pill" id="ext-source-type"><i class="fa-solid fa-microphone"></i> Source: VOICE</span>
+                                    <span class="meta-pill" id="ext-submitted-by"><i class="fa-solid fa-user"></i> Lead Site Engr</span>
+                                </div>
+                            </div>
+
+                            <!-- Right: Structured Normalized Entities -->
+                            <div class="extraction-card">
+                                <div class="extraction-card-title">
+                                    <span><i class="fa-solid fa-code-compare"></i> Structured Extracted Attributes</span>
+                                    <span class="badge badge-success" id="ext-confidence-badge">95.0% Confidence</span>
+                                </div>
+                                <div class="entity-attribute-grid">
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Target Asset</div>
+                                        <div class="attr-val highlight" id="ext-asset">P-204</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Discipline</div>
+                                        <div class="attr-val" id="ext-discipline">Mechanical</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Plant Unit</div>
+                                        <div class="attr-val" id="ext-unit">CDU-02</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Area / Location</div>
+                                        <div class="attr-val" id="ext-area">Pump Area</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Action / Scope</div>
+                                        <div class="attr-val" id="ext-action">MECHANICAL_INSTALLATION</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Extracted Progress</div>
+                                        <div class="attr-val highlight-emerald" id="ext-progress">80% Complete</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Schedule Delay</div>
+                                        <div class="attr-val text-rose" id="ext-delay">2 Days Impact</div>
+                                    </div>
+                                    <div class="attribute-item">
+                                        <div class="attr-label">Root Cause Category</div>
+                                        <div class="attr-val" id="ext-rootcause">MATERIAL_DELIVERY</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="attr-label mb-1">Raw Extracted JSON Payload</div>
+                                    <pre class="json-code-box" id="ext-raw-json">{}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 4: SCHEDULE MATCHING INTELLIGENCE -->
+            <section id="screen-matching-intelligence" class="screen-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title"><i class="fa-solid fa-microchip"></i> 5-Factor Schedule Scoring Matrix & Explainability</div>
+                        <div class="panel-controls">
+                            <span class="badge badge-primary">Auto-Sync Threshold: &ge; 85%</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Scoring Explanation Formula Banner -->
+                        <div class="scoring-formula-banner">
+                            <div class="formula-title"><i class="fa-solid fa-calculator"></i> Composite Matching Formula</div>
+                            <div class="formula-pills">
+                                <span class="formula-pill">Asset (40%)</span>
+                                <span class="formula-plus">+</span>
+                                <span class="formula-pill">Location (25%)</span>
+                                <span class="formula-plus">+</span>
+                                <span class="formula-pill">Discipline (15%)</span>
+                                <span class="formula-plus">+</span>
+                                <span class="formula-pill">Action (10%)</span>
+                                <span class="formula-plus">+</span>
+                                <span class="formula-pill">Semantic (10%)</span>
+                            </div>
+                        </div>
+
+                        <!-- Match Candidate Results Table -->
+                        <div class="table-responsive mt-4">
+                            <table class="table" id="table-matching-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Activity Code</th>
+                                        <th>Activity Name</th>
+                                        <th>Discipline</th>
+                                        <th>Asset</th>
+                                        <th>Scoring Breakdown (A / L / D / Act / Sem)</th>
+                                        <th>Final Confidence</th>
+                                        <th>AI Decision</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="8" class="text-center text-muted py-4">No matching evaluations available. Submit a report to run intelligence engine.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 5: PLANNER TRIAGE -->
+            <section id="screen-planner-triage" class="screen-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title"><i class="fa-solid fa-user-check text-amber"></i> Planner Review & Ambiguity Triage Queue</div>
+                        <span class="badge badge-warning" id="triage-pending-badge">0 Pending Review</span>
+                    </div>
+                    <div class="panel-body">
+                        <p class="text-muted text-sm mb-4">
+                            When field reports have missing asset IDs or composite match confidence falls below 85%, SynchroLink safely routes updates to this human-in-the-loop review queue to prevent erroneous schedule mutations.
+                        </p>
+
+                        <!-- Triage Items Container -->
+                        <div id="triage-items-list" class="triage-items-container">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-circle-check text-emerald"></i>
+                                <h3>All Ambiguities Triaged</h3>
+                                <p class="text-muted">No pending schedule matches require planner intervention right now.</p>
+                                <button class="btn btn-outline-primary btn-sm mt-3" id="btn-load-ambiguous-demo">Load Ambiguous Report Demo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 6: GANTT & SCHEDULE PROGRESS -->
+            <section id="screen-gantt-progress" class="screen-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title"><i class="fa-solid fa-chart-gantt"></i> Project Schedule & Progress Tracking (205 Activities)</div>
+                        <div class="panel-controls gap-2">
+                            <input type="text" id="gantt-search" class="form-control form-control-sm" placeholder="Search by Activity Code, Asset, or Name...">
+                            <select id="gantt-discipline-filter" class="form-control form-control-sm">
+                                <option value="">All Disciplines</option>
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Civil">Civil</option>
+                                <option value="Piping">Piping</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Instrumentation">Instrumentation</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body p-0">
+                        <div class="table-responsive">
+                            <table class="table gantt-table" id="table-gantt">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 170px;">Activity Code</th>
+                                        <th style="width: 250px;">Activity Name</th>
+                                        <th style="width: 120px;">Discipline</th>
+                                        <th style="width: 110px;">Area / Unit</th>
+                                        <th style="width: 180px;">Baseline vs Actual Progress</th>
+                                        <th style="width: 110px;">Status</th>
+                                        <th style="width: 100px;">Delay Flag</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="7" class="text-center text-muted py-4">Loading EPC schedule activities...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 7: DELAY INTELLIGENCE -->
+            <section id="screen-delay-intelligence" class="screen-view">
+                <div class="delay-dashboard-grid">
+                    <!-- Delay KPI Cards -->
+                    <div class="kpi-grid full-width">
+                        <div class="kpi-card">
+                            <div class="kpi-icon icon-rose"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="kpi-data">
+                                <div class="kpi-value" id="delay-total-incidents">0</div>
+                                <div class="kpi-title">Total Delay Events</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon icon-amber"><i class="fa-solid fa-calendar-xmark"></i></div>
+                            <div class="kpi-data">
+                                <div class="kpi-value" id="delay-total-days">0</div>
+                                <div class="kpi-title">Total Schedule Slip Days</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon icon-purple"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                            <div class="kpi-data">
+                                <div class="kpi-value" id="delay-top-cause">None</div>
+                                <div class="kpi-title">Primary Root Cause</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delay Root Cause Distribution -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-chart-pie"></i> Root Cause Breakdown</div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="rootcause-bars" id="rootcause-distribution-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delay Events Log Table -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fa-solid fa-list-ol"></i> Delay Incident Register</div>
+                        </div>
+                        <div class="panel-body p-0">
+                            <div class="table-responsive">
+                                <table class="table" id="table-delay-events">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Activity Code</th>
+                                            <th>Activity Name</th>
+                                            <th>Days Lost</th>
+                                            <th>Root Cause</th>
+                                            <th>Impact Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td colspan="6" class="text-center text-muted py-4">No delay events recorded in register.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 8: AUDIT TRAIL (SOC2 COMPLIANT MUTATION LOG) -->
+            <section id="screen-audit-trail" class="screen-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title"><i class="fa-solid fa-shield-halved text-emerald"></i> Immutable Schedule Audit Trail</div>
+                        <span class="badge badge-subtle">Tamper-Evident History</span>
+                    </div>
+                    <div class="panel-body p-0">
+                        <div class="table-responsive">
+                            <table class="table" id="table-audit-trail">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Actor</th>
+                                        <th>Action Type</th>
+                                        <th>Target Activity</th>
+                                        <th>Old Value &rarr; New Value</th>
+                                        <th>Decision</th>
+                                        <th>Confidence / Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="7" class="text-center text-muted py-4">No audit events generated yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
