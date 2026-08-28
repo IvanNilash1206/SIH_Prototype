@@ -5,7 +5,7 @@ import os
 
 def get_extraction_provider():
     # Factory for provider
-    if os.getenv("AI_PROVIDER") == "LLM":
+    if os.getenv("OPENROUTER_API_KEY"):
         return LLMExtractionProvider()
     return MockExtractionProvider()
 

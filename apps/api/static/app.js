@@ -15,7 +15,8 @@ const state = {
     auditEvents: [],
     triageItems: [],
     selectedReportId: null,
-    isRecordingVoice: false
+    isRecordingVoice: false,
+    currentRole: 'admin'
 };
 
 // Preset Scenarios
@@ -67,7 +68,8 @@ const elements = {
     ganttSearch: document.getElementById('gantt-search'),
     ganttDisciplineFilter: document.getElementById('gantt-discipline-filter'),
     selectExtractionReport: document.getElementById('select-extraction-report'),
-    toastContainer: document.getElementById('toast-container')
+    toastContainer: document.getElementById('toast-container'),
+    roleSelect: document.getElementById('role-select')
 };
 
 // Initialization
@@ -77,12 +79,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupForms();
     setupVoiceSimulator();
     setupFilters();
+    setupRBAC();
     
     await loadInitialData();
     
     // Polling for live telemetry
     setInterval(refreshLiveData, 3000);
 });
+
+// RBAC Handling
+function setupRBAC() {
+    if (elements.roleSelect) {
+        elements.roleSelect.addEventListener('change', (e) => {
+            state.currentRole = e.target.value;
+            applyRBAC();
+            showToast(`Role switched to ${e.target.options[e.target.selectedIndex].text}`, 'info');
+        });
+        // Apply initial RBAC based on default select value
+        state.currentRole = elements.roleSelect.value;
+        applyRBAC();
+    }
+}
+
+function applyRBAC() {
+    let firstAllowedScreen = null;
+    let currentScreenAllowed = false;
+
+    elements.navItems.forEach(item => {
+        const roles = item.getAttribute('data-roles');
+        if (roles) {
+            const allowedRoles = roles.split(',');
+            if (allowedRoles.includes(state.currentRole)) {
+                item.classList.remove('hidden-by-role');
+                if (!firstAllowedScreen) {
+                    firstAllowedScreen = item.getAttribute('data-screen');
+                }
+                if (item.getAttribute('data-screen') === state.currentScreen) {
+                    currentScreenAllowed = true;
+                }
+            } else {
+                item.classList.add('hidden-by-role');
+            }
+        }
+    });
+
+    if (!currentScreenAllowed && firstAllowedScreen) {
+        switchScreen(firstAllowedScreen);
+    }
+}
 
 // Toast Notifications
 function showToast(message, type = 'info') {

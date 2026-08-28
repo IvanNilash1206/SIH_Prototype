@@ -7,7 +7,7 @@
     <!-- Modern Typography & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/static/app.css">
 </head>
@@ -39,41 +39,41 @@
             <!-- Navigation Links -->
             <nav class="nav-menu">
                 <div class="nav-section-title">CONTROL ROOM</div>
-                <button class="nav-item active" data-screen="command-center">
+                <button class="nav-item active" data-screen="command-center" data-roles="admin,planner,auditor">
                     <i class="fa-solid fa-gauge-high"></i>
                     <span>Command Center</span>
                     <span class="nav-pill" id="nav-live-pill">LIVE</span>
                 </button>
-                <button class="nav-item" data-screen="field-reports">
+                <button class="nav-item" data-screen="field-reports" data-roles="admin,field_engineer">
                     <i class="fa-solid fa-clipboard-list"></i>
                     <span>Field Ingestion</span>
                     <span class="badge-dot" id="nav-reports-badge"></span>
                 </button>
-                <button class="nav-item" data-screen="extraction-view">
+                <button class="nav-item" data-screen="extraction-view" data-roles="admin,planner">
                     <i class="fa-solid fa-brain"></i>
                     <span>Extraction AI</span>
                 </button>
-                <button class="nav-item" data-screen="matching-intelligence">
+                <button class="nav-item" data-screen="matching-intelligence" data-roles="admin,planner">
                     <i class="fa-solid fa-network-wired"></i>
                     <span>Schedule Matching</span>
                 </button>
 
                 <div class="nav-section-title">ENGINEERING & OPS</div>
-                <button class="nav-item" data-screen="planner-triage">
+                <button class="nav-item" data-screen="planner-triage" data-roles="admin,planner">
                     <i class="fa-solid fa-user-check"></i>
                     <span>Planner Triage</span>
                     <span class="nav-counter danger hidden" id="nav-triage-count">0</span>
                 </button>
-                <button class="nav-item" data-screen="gantt-progress">
+                <button class="nav-item" data-screen="gantt-progress" data-roles="admin,planner,auditor">
                     <i class="fa-solid fa-chart-gantt"></i>
                     <span>Gantt & Progress</span>
                 </button>
-                <button class="nav-item" data-screen="delay-intelligence">
+                <button class="nav-item" data-screen="delay-intelligence" data-roles="admin,planner">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span>Delay Intelligence</span>
                     <span class="nav-counter warn hidden" id="nav-delay-count">0</span>
                 </button>
-                <button class="nav-item" data-screen="audit-trail">
+                <button class="nav-item" data-screen="audit-trail" data-roles="admin,auditor">
                     <i class="fa-solid fa-shield-halved"></i>
                     <span>Audit Trail</span>
                 </button>
@@ -101,6 +101,14 @@
                     <div class="header-breadcrumb" id="header-breadcrumb">CDU-EXP-02 &rsaquo; Real-time Operations</div>
                 </div>
                 <div class="header-right">
+                    <div class="role-selector">
+                        <select id="role-select" class="form-select btn-sm">
+                            <option value="admin">Admin</option>
+                            <option value="planner">Planner / Manager</option>
+                            <option value="field_engineer">Field Engineer</option>
+                            <option value="auditor">Auditor</option>
+                        </select>
+                    </div>
                     <div class="quick-stat">
                         <span class="stat-label">AI Confidence Threshold:</span>
                         <span class="stat-value">85.0%</span>
