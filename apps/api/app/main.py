@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from app.api import reports, projects, triage, audit, activities, delays, matches, whatsapp
+from app.api import reports, projects, triage, audit, activities, delays, matches, whatsapp, p6_export
 
 app = FastAPI(
     title="SynchroLink API",
@@ -28,6 +28,7 @@ app.include_router(activities.router, prefix="/api/activities", tags=["activitie
 app.include_router(delays.router, prefix="/api/delays", tags=["delays"])
 app.include_router(matches.router, prefix="/api/matches", tags=["matches"])
 app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["whatsapp"])
+app.include_router(p6_export.router, prefix="/api/p6", tags=["p6"])
 
 @app.get("/health")
 def health_check():
