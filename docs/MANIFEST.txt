@@ -1,0 +1,8 @@
+SYNCHROLINK PROTOTYPE DOCUMENTATION
+===================================
+
+This package is intended for use by the Antigravity build agent.
+Read AGENT_HANDOFF.md and ANTIGRAVITY_MASTER_INSTRUCTION.md first.
+
+Source PDF included: Internal_Hackathon_SIH26.pdf
+Documentation files: 23
