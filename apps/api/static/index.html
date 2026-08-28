@@ -279,6 +279,7 @@
                             <div class="panel-title"><i class="fa-solid fa-tower-broadcast"></i> Field Progress Ingestion</div>
                             <div class="ingestion-tabs">
                                 <button class="tab-btn active" data-tab="voice"><i class="fa-solid fa-microphone"></i> Voice / Hindi</button>
+                                <button class="tab-btn" data-tab="whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp Bot</button>
                                 <button class="tab-btn" data-tab="text"><i class="fa-solid fa-pen-to-square"></i> Text / Log</button>
                                 <button class="tab-btn" data-tab="dpr"><i class="fa-solid fa-file-excel"></i> DPR File</button>
                             </div>
@@ -334,7 +335,34 @@
                                     </div>
                                 </div>
 
-                                <!-- Tab 2: Text Mode -->
+                                <!-- Tab 2: WhatsApp Mode -->
+                                <div class="tab-content" id="tab-whatsapp" style="display: flex; justify-content: center; padding: 20px 0;">
+                                    <div class="smartphone-mockup" style="width: 320px; height: 500px; background: #000; border-radius: 30px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+                                        <div class="phone-screen" style="width: 100%; height: 100%; background: #0B141A; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
+                                            <div class="wa-header" style="background: #1F2C34; padding: 15px 10px 10px; display: flex; align-items: center; gap: 10px; color: white;">
+                                                <i class="fa-solid fa-arrow-left"></i>
+                                                <div class="wa-contact" style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                                    <div style="width: 32px; height: 32px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000;"><i class="fa-solid fa-robot"></i></div>
+                                                    <div style="display: flex; flex-direction: column;">
+                                                        <strong style="font-size: 0.9rem;">SynchroLink AI</strong>
+                                                        <span style="font-size: 0.7rem; color: #8696A0;">Bot • Online</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="wa-chat-area" id="wa-chat-box" style="flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-image: url('data:image/svg+xml;utf8,<svg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'1\' fill=\'rgba(255,255,255,0.05)\'/></svg>');">
+                                                <div class="wa-msg received" style="background: #202C33; color: #E9EDEF; padding: 8px 12px; border-radius: 12px; border-top-left-radius: 0; font-size: 0.85rem; max-width: 85%; align-self: flex-start;">
+                                                    Namaste! Send me your daily progress updates (text or voice notes) in English or Hinglish.
+                                                </div>
+                                            </div>
+                                            <div class="wa-input-area" style="background: #1F2C34; padding: 8px; display: flex; align-items: center; gap: 8px;">
+                                                <input type="text" id="wa-input" placeholder="Message" style="flex: 1; background: #2A3942; border: none; border-radius: 20px; padding: 8px 12px; color: white; outline: none; font-size: 0.85rem;">
+                                                <button type="button" class="wa-send-btn" id="wa-send-btn" style="width: 36px; height: 36px; border-radius: 50%; background: #25D366; border: none; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-paper-plane"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tab 3: Text Mode -->
                                 <div class="tab-content" id="tab-text">
                                     <!-- Text mode uses common textarea below -->
                                 </div>

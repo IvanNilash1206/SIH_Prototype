@@ -1,22 +1,11 @@
 <div class="ingestion-container">
-    
-    <!-- Custom Tabs -->
-    <div class="tabs-header mb-24">
-        <button class="tab-btn active" data-target="whatsapp-tab">
-            <i class="ph-fill ph-whatsapp-logo"></i> WhatsApp Simulator
-        </button>
-        <button class="tab-btn" data-target="dpr-tab">
-            <i class="ph-fill ph-file-csv"></i> Excel / CSV DPR
-        </button>
-        <button class="tab-btn" data-target="voice-tab">
-            <i class="ph-fill ph-microphone-stage"></i> Indic Voice
-        </button>
-    </div>
-
-    <!-- Tab Contents -->
-    <div class="tab-content active" id="whatsapp-tab">
-        <div class="grid-2" style="align-items: start;">
-            <!-- Smartphone Mockup -->
+    <div class="grid-2" style="align-items: start; gap: 24px;">
+        <!-- WhatsApp Simulator -->
+        <div>
+            <h3 class="mb-16" style="display: flex; align-items: center; gap: 8px;">
+                <i class="ph-fill ph-whatsapp-logo" style="color: #25D366; font-size: 1.5rem;"></i> 
+                WhatsApp Integration
+            </h3>
             <div class="smartphone-mockup">
                 <div class="phone-notch"></div>
                 <div class="phone-screen">
@@ -44,47 +33,32 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Pre-filled Scenarios -->
-            <div class="card glass-panel scenarios-panel">
-                <h3 class="mb-16">Test Scenarios</h3>
-                <p class="text-muted mb-16">Click a scenario to simulate sending a WhatsApp message to the webhook.</p>
+        <!-- Voice Ingestion -->
+        <div>
+            <h3 class="mb-16" style="display: flex; align-items: center; gap: 8px;">
+                <i class="ph-fill ph-activity" style="color: #F59E0B; font-size: 1.5rem;"></i> 
+                Voice & Web Ingestion
+            </h3>
+            <div class="card glass-panel text-center voice-area" style="padding: 40px 20px;">
+                <h3 class="mb-24">Field Audio Ingestion</h3>
                 
-                <div class="scenario-btn" data-msg="CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai. Material delay 2 din.">
-                    <strong>Auto-Sync (High Confidence)</strong>
-                    <span>"CDU Unit 2 mein P-204 pump mechanical installation 80 percent..."</span>
+                <div class="mic-circle mx-auto" id="mic-btn" style="margin: 0 auto;">
+                    <i class="ph-fill ph-microphone"></i>
                 </div>
-                <div class="scenario-btn" data-msg="Foundation kaam chal raha hai north zone mein.">
-                    <strong>Ambiguous (Routes to Triage)</strong>
-                    <span>Missing Asset ID. "Foundation kaam chal raha hai..."</span>
+                
+                <p class="text-muted mt-16 mb-16" id="mic-status-text">Click the microphone to start voice recording</p>
+                
+                <div class="waveform hidden justify-center mb-16" id="waveform">
+                    <span></span><span></span><span></span><span></span><span></span>
                 </div>
-                <div class="scenario-btn" data-msg="All electrical cable pulling complete for Boiler Area B-101.">
-                    <strong>100% Complete</strong>
-                    <span>"All electrical cable pulling complete for B-101."</span>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="tab-content" id="dpr-tab">
-        <div class="card glass-panel text-center upload-area">
-            <i class="ph-fill ph-file-xls mb-16 text-primary" style="font-size: 4rem;"></i>
-            <h3>Upload Excel Daily Progress Report</h3>
-            <p class="text-muted mb-16">Drag and drop your spreadsheet here or click to browse.</p>
-            <button class="btn btn-primary" onclick="alert('File upload mockup clicked.')">Select File</button>
-        </div>
-    </div>
+                <div class="transcript-box mt-16" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-light); min-height: 100px; max-height: 150px; overflow-y: auto; padding: 12px; border-radius: 8px; text-align: left; font-size: 0.9rem;">
+                    <span id="transcript-text" class="text-muted italic">Transcription will appear here...</span>
+                </div>
 
-    <div class="tab-content" id="voice-tab">
-        <div class="card glass-panel text-center voice-area">
-            <div class="mic-circle" id="mic-btn">
-                <i class="ph-fill ph-microphone"></i>
-            </div>
-            <h3 class="mt-24 mb-16">Indic Speech-to-Text</h3>
-            <p class="text-muted">Click to start recording in Hindi/Hinglish</p>
-            
-            <div class="waveform hidden" id="waveform">
-                <span></span><span></span><span></span><span></span><span></span>
+                <button id="voice-submit-btn" class="btn btn-primary mt-16" style="width: 100%;" disabled>Submit Audio Report</button>
             </div>
         </div>
     </div>

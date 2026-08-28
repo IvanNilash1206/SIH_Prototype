@@ -17,13 +17,13 @@ export default function App() {
           <span className="font-semibold text-lg">SynchroLink</span>
         </div>
         <nav className="flex-1 p-4 flex flex-col gap-2">
-          <button 
-            onClick={() => setActiveTab("dashboard")}
-            className={`flex items-center gap-3 p-3 rounded-md transition-colors ${activeTab === 'dashboard' ? 'bg-blue-600' : 'hover:bg-slate-800 text-slate-300'}`}
+          <a 
+            href="http://localhost:8000"
+            className={`flex items-center gap-3 p-3 rounded-md transition-colors hover:bg-slate-800 text-slate-300`}
           >
             <LayoutDashboard size={20} />
             Command Center
-          </button>
+          </a>
           <button 
             onClick={() => setActiveTab("ingestion")}
             className={`flex items-center gap-3 p-3 rounded-md transition-colors ${activeTab === 'ingestion' ? 'bg-blue-600' : 'hover:bg-slate-800 text-slate-300'}`}
@@ -66,15 +66,7 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === "dashboard" && (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <GitMerge size={48} className="mx-auto mb-4 opacity-50" />
-                <p>Use the previous static UI (port 8000) for the full Command Center.</p>
-                <p className="text-sm">This React demo focuses on the interactive WhatsApp and Speech-to-Text ingestion pipeline.</p>
-              </div>
-            </div>
-          )}
+
         </div>
       </main>
     </div>

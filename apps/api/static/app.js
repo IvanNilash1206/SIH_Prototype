@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupPresets();
     setupForms();
     setupVoiceSimulator();
+    setupWhatsAppSimulator();
     setupFilters();
     setupRBAC();
     
@@ -254,10 +255,26 @@ function setupPresets() {
     }
 }
 
-// Voice Simulator
+// Voice Simulator / Speech Recognition
 function setupVoiceSimulator() {
     const card = document.querySelector('.voice-recorder-card');
     if (!elements.btnRecordVoice || !card) return;
+
+    let recognition = null;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        
+        recognition.onresult = (event) => {
+            let currentTranscript = "";
+            for (let i = 0; i < event.results.length; i++) {
+                currentTranscript += event.results[i][0].transcript;
+            }
+            elements.rawTextInput.value = currentTranscript;
+        };
+    }
 
     elements.btnRecordVoice.addEventListener('click', () => {
         state.isRecordingVoice = !state.isRecordingVoice;
@@ -265,30 +282,105 @@ function setupVoiceSimulator() {
 
         if (state.isRecordingVoice) {
             card.classList.add('recording');
-            statusEl.textContent = 'Listening to speech telemetry... (Speaking in Hinglish)';
+            statusEl.textContent = 'Listening to speech telemetry... (Speak now)';
             elements.rawTextInput.value = '';
-            
-            // Simulate live speech-to-text typing
-            const transcript = PRESETS.golden.text;
-            let i = 0;
-            const interval = setInterval(() => {
-                if (!state.isRecordingVoice) {
-                    clearInterval(interval);
-                    return;
-                }
-                elements.rawTextInput.value = transcript.slice(0, i += 4);
-                if (i >= transcript.length) {
-                    clearInterval(interval);
-                    state.isRecordingVoice = false;
-                    card.classList.remove('recording');
-                    statusEl.textContent = 'Voice capture complete. Ready for pipeline processing.';
-                    showToast('Voice transcription synchronized', 'success');
-                }
-            }, 80);
+            if (recognition) {
+                recognition.start();
+            } else {
+                statusEl.textContent = 'Speech Recognition API not supported in this browser. Type manually.';
+            }
         } else {
             card.classList.remove('recording');
-            statusEl.textContent = 'Recording stopped.';
+            statusEl.textContent = 'Recording stopped. Ready for pipeline processing.';
+            if (recognition) {
+                recognition.stop();
+            }
         }
+    });
+}
+
+// WhatsApp Simulator
+function setupWhatsAppSimulator() {
+    const sendBtn = document.getElementById('wa-send-btn');
+    const input = document.getElementById('wa-input');
+    const chatBox = document.getElementById('wa-chat-box');
+    if (!sendBtn || !input || !chatBox) return;
+
+    function appendMessage(text, type) {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const div = document.createElement('div');
+        div.className = `wa-msg ${type}`;
+        div.style.padding = '8px 12px';
+        div.style.borderRadius = '12px';
+        div.style.fontSize = '0.85rem';
+        div.style.maxWidth = '85%';
+        div.style.marginTop = '8px';
+        div.style.alignSelf = type === 'sent' ? 'flex-end' : 'flex-start';
+        div.style.background = type === 'sent' ? '#005C4B' : '#202C33';
+        div.style.color = '#E9EDEF';
+        if (type === 'sent') div.style.borderTopRightRadius = '0';
+        else div.style.borderTopLeftRadius = '0';
+        
+        let formattedText = text.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+        div.innerHTML = `${formattedText} <div style="font-size: 0.65rem; color: rgba(255,255,255,0.5); text-align: right; margin-top: 4px;">${time}</div>`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage(text) {
+        if (!text.trim()) return;
+        appendMessage(text, 'sent');
+        input.value = '';
+
+        const typingId = 'typing-' + Date.now();
+        const typingDiv = document.createElement('div');
+        typingDiv.id = typingId;
+        typingDiv.className = 'wa-msg received';
+        typingDiv.style.alignSelf = 'flex-start';
+        typingDiv.style.background = '#202C33';
+        typingDiv.style.color = '#E9EDEF';
+        typingDiv.style.padding = '8px 12px';
+        typingDiv.style.borderRadius = '12px';
+        typingDiv.style.borderTopLeftRadius = '0';
+        typingDiv.style.marginTop = '8px';
+        typingDiv.style.fontSize = '0.85rem';
+        typingDiv.innerHTML = '<em>typing...</em>';
+        chatBox.appendChild(typingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const reqData = {
+                phone_number: "+91 99999 00000",
+                sender_name: "Web Simulator User",
+                message_type: "text",
+                message_body: text
+            };
+            // Note: Since this is outside the normal fetch pipeline, we simulate fetch to the webhook
+            const res = await fetch(`${API_BASE}/api/whatsapp/webhook`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reqData)
+            });
+            const response = await res.json();
+            
+            document.getElementById(typingId).remove();
+            
+            if (response.bot_reply) {
+                appendMessage(response.bot_reply, 'received');
+            } else {
+                appendMessage(`✅ Action logged successfully.`, 'received');
+            }
+            refreshLiveData(); // Update dashboard
+        } catch (e) {
+            document.getElementById(typingId).remove();
+            console.error("WA Sim Error:", e);
+            appendMessage(`⚠️ Error communicating with server.`, 'received');
+        }
+    }
+
+    sendBtn.addEventListener('click', () => sendMessage(input.value));
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage(input.value);
     });
 }
 
