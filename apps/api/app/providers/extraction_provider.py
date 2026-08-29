@@ -136,7 +136,11 @@ class MockExtractionProvider(ExtractionProvider):
 
         return ExtractionResult(entities=entities, confidence=confidence)
 
-class LLMExtractionProvider(ExtractionProvider):
+class GeminiExtractionProvider(ExtractionProvider):
+    def __init__(self, model_name: str = None):
+        import os
+        self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+
     def extract(self, text: str, project_id: str = None) -> ExtractionResult:
         import os
         import json
@@ -144,15 +148,153 @@ class LLMExtractionProvider(ExtractionProvider):
         import urllib.error
         from app.schemas.extraction import ExtractedEntities, ExtractionResult
 
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            print("No GOOGLE_API_KEY found, falling back to mock extraction")
+            return MockExtractionProvider().extract(text, project_id)
+
+        system_instruction = (
+            "You are an expert EPC (Engineering, Procurement, and Construction) Progress Intelligence AI. "
+            "Your task is to parse unstructured field reports, voice transcripts, logs, and supervisor notes "
+            "(which may be in English, Hindi, Hinglish, or technical construction slang) and extract structured entities."
+        )
+
+        prompt = f"""Field Report Transcript:
+"{text}"
+
+Extract the project progress, asset, and delay metrics. Return a JSON object matching this schema:
+{{
+    "asset_id": "string or null (e.g. P-204, F-102, EP-07, TK-301, V-101; null if ambiguous or unmentioned)",
+    "plant_unit": "string or null (e.g. CDU-01, CDU-02, CDU-03, TANK-FARM, CONTROL-ROOM, UTILITIES)",
+    "area": "string or null (e.g. Pump Area, Pipe Rack, Control Room, Foundation Area)",
+    "discipline": "string or null (Mechanical, Civil, Piping, Electrical, Instrumentation)",
+    "action": "string or null (e.g. MECHANICAL_INSTALLATION, CONCRETE_POURING, TERMINATION, CABLE_PULLING, SPOOL_ERECTION, WELDING, ALIGNMENT, TESTING)",
+    "progress_percent": 0.0,
+    "status": "string (NOT_STARTED, IN_PROGRESS, COMPLETED)",
+    "delay_days": null,
+    "delay_root_cause": "string or null (MATERIAL_DELIVERY, LABOUR_SHORTAGE, EQUIPMENT_FAILURE, WEATHER, DESIGN_CHANGE, ACCESS_RESTRICTION)",
+    "confidence": 0.95
+}}
+
+Guidelines:
+- If an exact asset tag is mentioned (like P-204, F-102, EP-07), standardize it with uppercase and hyphens.
+- If progress is mentioned (e.g., "80 percent", "95%", "complete"), parse progress_percent as a float between 0 and 100.
+- If delayed (e.g., "2 days delay due to material delivery"), extract delay_days as an integer and classify delay_root_cause.
+- If the report is ambiguous or does not name a specific asset code, set asset_id to null and set confidence to ~0.60.
+"""
+
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={api_key}"
+            payload = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {"text": f"{system_instruction}\n\n{prompt}"}
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.1,
+                    "responseMimeType": "application/json"
+                }
+            }
+            
+            req_data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(
+                url,
+                data=req_data,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            with urllib.request.urlopen(req, timeout=12) as response:
+                resp_body = response.read().decode("utf-8")
+                resp_json = json.loads(resp_body)
+                
+                candidate = resp_json.get("candidates", [{}])[0]
+                part_text = candidate.get("content", {}).get("parts", [{}])[0].get("text", "{}")
+                
+                parsed = json.loads(part_text)
+                
+                # Normalize asset_id format if present
+                raw_asset = parsed.get("asset_id")
+                if raw_asset and isinstance(raw_asset, str):
+                    raw_asset = raw_asset.strip().upper()
+                else:
+                    raw_asset = None
+
+                progress_val = parsed.get("progress_percent")
+                if progress_val is not None:
+                    try:
+                        progress_val = float(progress_val)
+                    except (ValueError, TypeError):
+                        progress_val = 0.0
+                else:
+                    progress_val = 0.0
+
+                # Status calculation
+                status_val = parsed.get("status")
+                if not status_val or status_val not in ["NOT_STARTED", "IN_PROGRESS", "COMPLETED"]:
+                    if progress_val >= 100.0:
+                        status_val = "COMPLETED"
+                    elif progress_val > 0.0:
+                        status_val = "IN_PROGRESS"
+                    else:
+                        status_val = "NOT_STARTED"
+
+                delay_days_val = parsed.get("delay_days")
+                if delay_days_val is not None:
+                    try:
+                        delay_days_val = int(delay_days_val)
+                    except (ValueError, TypeError):
+                        delay_days_val = None
+
+                entities = ExtractedEntities(
+                    project_id=project_id,
+                    asset_id=raw_asset,
+                    plant_unit=parsed.get("plant_unit"),
+                    area=parsed.get("area"),
+                    discipline=parsed.get("discipline"),
+                    action=parsed.get("action"),
+                    progress_percent=progress_val,
+                    status=status_val,
+                    delay_days=delay_days_val,
+                    delay_root_cause=parsed.get("delay_root_cause")
+                )
+                
+                confidence = float(parsed.get("confidence", 0.95))
+                if not entities.asset_id:
+                    confidence = min(confidence, 0.65)
+                else:
+                    confidence = max(confidence, 0.90)
+
+                print(f"[Gemini 3.5 Flash] Extracted entities for project {project_id}: {entities.model_dump()}")
+                return ExtractionResult(entities=entities, confidence=confidence)
+
+        except Exception as e:
+            print(f"[Gemini Extraction Error] {e} - falling back to rule-based parser")
+            return MockExtractionProvider().extract(text, project_id)
+
+
+class LLMExtractionProvider(ExtractionProvider):
+    def extract(self, text: str, project_id: str = None) -> ExtractionResult:
+        import os
+        if os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"):
+            return GeminiExtractionProvider().extract(text, project_id)
+
+        import json
+        import urllib.request
+        import urllib.error
+        from app.schemas.extraction import ExtractedEntities, ExtractionResult
+
         api_key = os.getenv("OPENROUTER_API_KEY")
         if not api_key:
-            print("No OPENROUTER_API_KEY, falling back to mock")
             return MockExtractionProvider().extract(text, project_id)
 
         prompt = f"""You are an expert EPC AI Assistant. Extract the construction progress details from the following report.
 Report: "{text}"
 
-Respond ONLY with a valid JSON object matching this schema exactly, do not add markdown formatting or backticks:
+Respond ONLY with a valid JSON object matching this schema exactly:
 {{
     "asset_id": "string or null (e.g., P-204, CDU-01, null)",
     "plant_unit": "string or null",

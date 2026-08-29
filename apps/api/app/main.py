@@ -1,4 +1,20 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env from root and parent directories
+env_paths = [
+    Path(__file__).resolve().parent.parent.parent.parent / ".env",
+    Path(__file__).resolve().parent.parent.parent / ".env",
+    Path(__file__).resolve().parent.parent / ".env",
+    Path(__file__).resolve().parent / ".env",
+    Path.cwd() / ".env",
+    Path.cwd().parent / ".env"
+]
+for p in env_paths:
+    if p.exists():
+        load_dotenv(p)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles

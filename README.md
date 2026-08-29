@@ -49,11 +49,18 @@ npm run dev
 ```
 This serves the mobile-oriented Voice & WhatsApp simulators at `http://localhost:5173`.
 
-## AI Configuration (Demo Mode vs Real Provider)
-The prototype comes with a `MockExtractionProvider` that deterministic parses text according to the SIH prompt's exact testing requirements (e.g. "CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai").
-To use a real LLM for broader testing:
-Set the environment variable:
-`$env:OPENROUTER_API_KEY="your-key-here"`
+## AI Configuration (Google Gemini & LLM Provider)
+The prototype natively integrates with **Google Gemini (`gemini-3.5-flash`)** for real-time natural language field extraction across English, Hindi, and technical construction jargon.
+
+Add your Gemini API key to `.env` in the project root:
+```env
+GOOGLE_API_KEY=your_gemini_api_key_here
+```
+Or set it as an environment variable:
+```powershell
+$env:GOOGLE_API_KEY="your_gemini_api_key_here"
+```
+*(If no API key is provided, it automatically falls back to deterministic rule-based parsing).*
 
 ## Troubleshooting
 - **Frontend crashes on load**: Ensure you ran `npm install` inside `apps/web`. The missing `lib/utils.js` has been patched.

@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 from app.models.domain import FieldReport, Extraction
-from app.providers.extraction_provider import MockExtractionProvider, LLMExtractionProvider
+from app.providers.extraction_provider import MockExtractionProvider, LLMExtractionProvider, GeminiExtractionProvider
 import os
 
 def get_extraction_provider():
     # Factory for provider
+    if os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"):
+        return GeminiExtractionProvider()
     if os.getenv("OPENROUTER_API_KEY"):
         return LLMExtractionProvider()
     return MockExtractionProvider()
