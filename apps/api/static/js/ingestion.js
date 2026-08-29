@@ -120,7 +120,7 @@
         try {
             const reqData = {
                 phone_number: "+91 98765 43210",
-                sender_name: "Rajesh Kumar (Voice UI)",
+                sender_name: "Suriya (Voice UI)",
                 message_type: "audio",
                 message_body: finalTranscript
             };

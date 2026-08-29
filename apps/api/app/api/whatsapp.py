@@ -16,7 +16,7 @@ router = APIRouter()
 
 class WhatsAppMessageRequest(BaseModel):
     phone_number: str = "+91 98765 43210"
-    sender_name: str = "Rajesh Kumar (Site Lead)"
+    sender_name: str = "Suriya (Site Lead)"
     message_type: str = "text" # text, audio, image, document
     message_body: str
     media_url: Optional[str] = None

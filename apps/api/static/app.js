@@ -24,7 +24,7 @@ const PRESETS = {
     golden: {
         text: "CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai. Material delivery ki wajah se 2 din delay hua.",
         unit: "CDU-02",
-        supervisor: "Rajesh Kumar (Lead Site Engr)"
+        supervisor: "Suriya (Lead Site Engr)"
     },
     ambiguous: {
         text: "Pump area ka installation almost complete hai. Testing pending hai.",
@@ -44,7 +44,7 @@ const PRESETS = {
     completion: {
         text: "P-203 mechanical installation complete, actual progress 100 percent.",
         unit: "CDU-02",
-        supervisor: "Rajesh Kumar (Lead Site Engr)"
+        supervisor: "Suriya (Lead Site Engr)"
     }
 };
 

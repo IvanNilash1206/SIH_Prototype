@@ -48,7 +48,7 @@ export default function WhatsAppSimulator() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone_number: "+91 98765 43210",
-          sender_name: "Rajesh Kumar (Site Lead)",
+          sender_name: "Suriya (Site Lead)",
           message_type: "text",
           message_body: text
         })

@@ -122,7 +122,7 @@ curl -X POST http://127.0.0.1:8000/api/whatsapp/webhook \
   -H "Content-Type: application/json" \
   -d '{
     "phone_number": "+91 98765 43210",
-    "sender_name": "Rajesh Kumar (Site Lead)",
+    "sender_name": "Suriya (Site Lead)",
     "message_type": "text",
     "message_body": "CDU Unit 2 mein P-204 pump mechanical installation 80 percent complete hai. Material delivery ki wajah se 2 din delay hua."
   }'

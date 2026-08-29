@@ -48,7 +48,7 @@ export default function VoiceIngestion() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone_number: "+91 98765 43210",
-          sender_name: "Rajesh Kumar (Voice UI)",
+          sender_name: "Suriya (Voice UI)",
           message_type: "audio",
           message_body: transcript
         })
